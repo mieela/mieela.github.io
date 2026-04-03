@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alba Mata — Game Developer & Narrative Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0608;
+    --bg2: #100c0e;
+    --bg3: #160f12;
+    --crimson: #8b1a2a;
+    --crimson-light: #c02040;
+    --gold: #b8965a;
+    --gold-light: #d4af72;
+    --text: #e8ddd5;
+    --text-muted: #8a7a72;
+    --border: rgba(184, 150, 90, 0.2);
+    --border-strong: rgba(184, 150, 90, 0.5);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to bottom, rgba(10,6,8,0.95), transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 10vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 80% 50%, rgba(139,26,42,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(184,150,90,0.06) 0%, transparent 60%);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: 8vw;
+    top: 15%;
+    height: 70%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border-strong), transparent);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--crimson-light);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow::before {
+    content: '—— ';
+    color: var(--gold);
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(4rem, 9vw, 9rem);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+  }
+
+  .hero-subtitle {
+    margin-top: 2rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-roles {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  .role-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--border-strong);
+    color: var(--gold);
+  }
+
+  .role-sep { color: var(--border-strong); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 8rem 10vw;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    color: var(--crimson-light);
+    letter-spacing: 0.1em;
+  }
+
+  .section-line {
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--border-strong);
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  h2 span { color: var(--gold); font-style: italic; }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-text p:first-child::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 400;
+    float: left;
+    line-height: 0.75;
+    margin-right: 0.15em;
+    color: var(--crimson-light);
+  }
+
+  .skills-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .skills-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .skills-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.3s;
+  }
+
+  .skills-list li:hover { color: var(--text); }
+
+  .skill-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--crimson-light);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* PROJECTS */
+  .projects-bg {
+    background: var(--bg2);
+  }
+
+  .projects-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 10% 50%, rgba(139,26,42,0.08) 0%, transparent 60%);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-card {
+    background: var(--bg3);
+    padding: 2.5rem;
+    border: 1px solid var(--border);
+    transition: border-color 0.4s, background 0.4s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--crimson);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .project-card:hover {
+    border-color: var(--border-strong);
+    background: rgba(22, 15, 18, 0.9);
+  }
+
+  .project-card:hover::before { transform: scaleX(1); }
+
+  .project-category {
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--crimson-light);
+    margin-bottom: 1rem;
+  }
+
+  .project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .project-desc {
+    font-size: 0.72rem;
+    line-height: 1.9;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .tag {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .project-link {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .project-card:hover .project-link { opacity: 1; }
+
+  /* PROJECTS — coming soon state */
+  .projects-soon {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 3rem;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .projects-soon p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .projects-soon span {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--border-strong);
+  }
+
+  /* CONTACT */
+  .contact-inner {
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-inner p {
+    font-size: 0.8rem;
+    line-height: 2;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, color 0.3s;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .contact-link:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .contact-link-icon {
+    font-size: 1rem;
+    width: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 2.5rem 10vw;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer p {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+  }
+
+  .footer-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--border-strong);
+    letter-spacing: 0.5em;
+  }
+
+  /* ORNAMENTAL DIVIDER */
+  .ornament {
+    text-align: center;
+    color: var(--border-strong);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.8em;
+    padding: 1rem 0;
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+  }
+
+  .ornament.on-dark { background: var(--bg2); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero > * {
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-eyebrow { animation-delay: 0.1s; }
+  h1 { animation-delay: 0.3s; }
+  .hero-subtitle { animation-delay: 0.5s; }
+  .hero-roles { animation-delay: 0.6s; }
+  .scroll-hint { animation-delay: 0.9s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    section { padding: 5rem 6vw; }
+
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+
+    footer {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="#" class="nav-logo">Alba Mata</a>
+  <ul class="nav-links">
+    <li><a href="#about">Sobre mí</a></li>
+    <li><a href="#projects">Proyectos</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Portfolio · Game Development</p>
+  <h1>Alba<em>Mata</em></h1>
+  <p class="hero-subtitle">Crafting worlds from darkness &amp; code</p>
+  <div class="hero-roles">
+    <span class="role-tag">Narrative Design</span>
+    <span class="role-sep">✦</span>
+    <span class="role-tag">Game Design</span>
+    <span class="role-sep">✦</span>
+    <span class="role-tag">Level Design</span>
+    <span class="role-sep">✦</span>
+    <span class="role-tag">Programming</span>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Descender</span>
+  </div>
+</section>
+
+<div class="ornament">✦ ✦ ✦</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <div class="section-line"></div>
+    <h2>Sobre <span>mí</span></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <!-- ✏️ EDITAR: Cambia este texto por tu bio real -->
+      <p>Soy diseñadora de videojuegos con especialización en narrativa, level design y programación. Me apasiona crear experiencias que mezclan mecánicas sólidas con historias que permanecen en quien las juega.</p>
+      <p>Actualmente finalizando el Máster en Diseño de Videojuegos, donde he explorado la intersección entre escritura interactiva, diseño de niveles y desarrollo técnico. Creo en los videojuegos como forma de arte capaz de contar lo que otros medios no pueden.</p>
+    </div>
+    <div>
+      <p class="skills-label">Especialidades</p>
+      <ul class="skills-list">
+        <li><span class="skill-dot"></span>Narrative Design &amp; Interactive Writing</li>
+        <li><span class="skill-dot"></span>Game Design &amp; Systems Design</li>
+        <li><span class="skill-dot"></span>Level Design</li>
+        <li><span class="skill-dot"></span>Programming · Unity / C#</li>
+        <li><span class="skill-dot"></span>Control de versiones · GitLab / GitHub</li>
+        <!-- ✏️ EDITAR: Añade o quita habilidades según tu perfil real -->
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="ornament on-dark">✦ ✦ ✦</div>
+
+<!-- PROJECTS -->
+<section id="projects" class="projects-bg">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <div class="section-line"></div>
+    <h2>Pro<span>yectos</span></h2>
+  </div>
+
+  <!-- 
+    ✏️ INSTRUCCIONES:
+    Cuando tengas proyectos, borra el bloque "projects-soon" de abajo
+    y descomenta el bloque "projects-grid".
+    Rellena cada tarjeta con tu info real.
+  -->
+
+  <!-- ESTADO ACTUAL: Sin proyectos todavía -->
+  <div class="projects-soon">
+    <p>Los proyectos están en camino.</p>
+    <span>Vuelve pronto · Fin de máster · 2025</span>
+  </div>
+
+  <!--
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <p class="project-category">Narrative Design</p>
+      <h3 class="project-title">Título del Proyecto</h3>
+      <p class="project-desc">Descripción breve del proyecto. Qué historia cuenta, qué decisiones toma el jugador, qué herramientas usaste y qué aprendiste.</p>
+      <div class="project-tags">
+        <span class="tag">Twine</span>
+        <span class="tag">Ink</span>
+        <span class="tag">Narrative</span>
+      </div>
+      <a href="https://gitlab.com/tuusuario/proyecto" class="project-link">Ver proyecto →</a>
+    </div>
+
+    <div class="project-card">
+      <p class="project-category">Level Design</p>
+      <h3 class="project-title">Título del Proyecto</h3>
+      <p class="project-desc">Descripción del diseño de nivel: flujo, intenciones de diseño, retos que resolviste y proceso de iteración.</p>
+      <div class="project-tags">
+        <span class="tag">Unity</span>
+        <span class="tag">Greyboxing</span>
+        <span class="tag">Level Design</span>
+      </div>
+      <a href="https://gitlab.com/tuusuario/proyecto" class="project-link">Ver proyecto →</a>
+    </div>
+
+    <div class="project-card">
+      <p class="project-category">Programming</p>
+      <h3 class="project-title">Título del Proyecto</h3>
+      <p class="project-desc">Descripción del proyecto de programación: mecánicas implementadas, arquitectura del código y lo más interesante que resolviste.</p>
+      <div class="project-tags">
+        <span class="tag">C#</span>
+        <span class="tag">Unity</span>
+        <span class="tag">GitLab</span>
+      </div>
+      <a href="https://gitlab.com/tuusuario/proyecto" class="project-link">Ver proyecto →</a>
+    </div>
+
+  </div>
+  -->
+
+</section>
+
+<div class="ornament">✦ ✦ ✦</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <div class="section-line"></div>
+    <h2>Con<span>tacto</span></h2>
+  </div>
+  <div class="contact-inner">
+    <!-- ✏️ EDITAR: Personaliza este texto si quieres -->
+    <p>Abierta a oportunidades en diseño narrativo, level design y desarrollo. Si quieres hablar de proyectos, colaboraciones o simplemente de videojuegos, escríbeme.</p>
+    <div class="contact-links">
+      <!-- ✏️ EDITAR: Reemplaza todos los href y textos con tus datos reales -->
+      <a href="mailto:tu@email.com" class="contact-link">
+        <span class="contact-link-icon">✉</span>
+        tu@email.com
+      </a>
+      <a href="https://github.com/tuusuario" class="contact-link" target="_blank" rel="noopener">
+        <span class="contact-link-icon">◈</span>
+        github.com/tuusuario
+      </a>
+      <a href="https://gitlab.com/tuusuario" class="contact-link" target="_blank" rel="noopener">
+        <span class="contact-link-icon">◇</span>
+        gitlab.com/tuusuario
+      </a>
+      <a href="https://linkedin.com/in/tuusuario" class="contact-link" target="_blank" rel="noopener">
+        <span class="contact-link-icon">▣</span>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Alba Mata · Todos los derechos reservados</p>
+  <span class="footer-ornament">✦</span>
+  <p>Hecho con código &amp; oscuridad</p>
+</footer>
+
+</body>
+</html>
